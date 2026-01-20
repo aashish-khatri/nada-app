@@ -1,11 +1,10 @@
 import React, { useState } from 'react';
 import { View, Text, StyleSheet, Alert } from 'react-native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import { Button, Input } from '../../components';
+import { ScreenWrapper, Header, Button, Input } from '../../components';
 import { colors, spacing, typography } from '../../theme';
 import { RootStackParamList } from '../../types';
 import { validatePhoneNumber } from '../../utils/validation';
-import { SafeAreaView } from 'react-native-safe-area-context';
 
 type PhoneVerifyScreenProps = {
   navigation: NativeStackNavigationProp<RootStackParamList, 'PhoneVerify'>;
@@ -22,7 +21,6 @@ export const PhoneVerifyScreen: React.FC<PhoneVerifyScreenProps> = ({ navigation
     }
 
     setLoading(true);
-
     // Simulate API call
     setTimeout(() => {
       setLoading(false);
@@ -31,14 +29,23 @@ export const PhoneVerifyScreen: React.FC<PhoneVerifyScreenProps> = ({ navigation
   };
 
   return (
-    <SafeAreaView style={styles.container}>
+    <ScreenWrapper>
+      <Header 
+        title="Phone Verification" 
+        onBack={() => navigation.goBack()}
+      />
+
       <View style={styles.content}>
+        {/* Icon & Text */}
         <View style={styles.header}>
           <Text style={styles.emoji}>📱</Text>
           <Text style={styles.title}>Enter Your Phone Number</Text>
-          <Text style={styles.subtitle}>We'll send you a verification code</Text>
+          <Text style={styles.subtitle}>
+            We'll send you a verification code to confirm your identity
+          </Text>
         </View>
 
+        {/* Form */}
         <View style={styles.form}>
           <Input
             label="Phone Number"
@@ -55,16 +62,17 @@ export const PhoneVerifyScreen: React.FC<PhoneVerifyScreenProps> = ({ navigation
             loading={loading}
           />
         </View>
+
+        {/* Terms */}
+        <Text style={styles.terms}>
+          By continuing, you agree to our Terms of Service and Privacy Policy
+        </Text>
       </View>
-    </SafeAreaView>
+    </ScreenWrapper>
   );
 };
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: colors.warm[50],
-  },
   content: {
     flex: 1,
     paddingHorizontal: spacing.s6,
@@ -76,19 +84,32 @@ const styles = StyleSheet.create({
   },
   emoji: {
     fontSize: 64,
-    marginBottom: spacing.s4,
+    marginBottom: spacing.s5,
   },
   title: {
     fontSize: typography.fontSize['2xl'],
-    fontWeight: typography.fontWeight.semibold,
+    fontWeight: typography.fontWeight.bold,
     color: colors.warm[800],
-    marginBottom: spacing.s4,
+    marginBottom: spacing.s3,
+    textAlign: 'center',
   },
   subtitle: {
     fontSize: typography.fontSize.base,
     color: colors.warm[500],
+    textAlign: 'center',
+    lineHeight: typography.fontSize.base * 1.5,
+    maxWidth: 280,
   },
   form: {
     width: '100%',
+  },
+  terms: {
+    marginTop: 'auto',
+    marginBottom: spacing.s8,
+    fontSize: typography.fontSize.xs,
+    color: colors.warm[400],
+    textAlign: 'center',
+    lineHeight: typography.fontSize.xs * 1.5,
+    paddingHorizontal: spacing.s4,
   },
 });

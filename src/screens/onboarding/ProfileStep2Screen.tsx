@@ -1,11 +1,16 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet,  ScrollView, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet, ScrollView } from 'react-native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import { Button, Input, ProgressBar } from '../../components';
-import { colors, spacing, typography } from '../../theme';
-import { RootStackParamList } from '../../types';
+import { 
+  ScreenWrapper, 
+  Header, 
+  Input, 
+  ProgressBar, 
+  FormButtonGroup 
+} from '../../components';
 import { Picker } from '@react-native-picker/picker';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { colors, spacing, typography, radius } from '../../theme';
+import { RootStackParamList } from '../../types';
 
 type ProfileStep2ScreenProps = {
   navigation: NativeStackNavigationProp<RootStackParamList, 'ProfileStep2'>;
@@ -28,17 +33,21 @@ export const ProfileStep2Screen: React.FC<ProfileStep2ScreenProps> = ({ navigati
   };
 
   return (
-    <SafeAreaView style={styles.container} edges={['top', 'bottom']}>
-      <View style={styles.header}>
-        <TouchableOpacity onPress={handleBack} style={styles.backButton}>
-          <Text style={styles.backIcon}>←</Text>
-        </TouchableOpacity>
-        <Text style={styles.headerTitle}>Create Profile</Text>
-      </View>
+    <ScreenWrapper edges={['top', 'bottom']}>
+      <Header 
+        title="Create Profile" 
+        onBack={handleBack}
+      />
 
-      <ScrollView style={styles.content} showsVerticalScrollIndicator={false}>
+      <ScrollView 
+        style={styles.scrollView}
+        contentContainerStyle={styles.scrollContent}
+        showsVerticalScrollIndicator={false}
+        keyboardShouldPersistTaps="handled"
+      >
         <ProgressBar progress={50} label="Step 2 of 4 - Location & Career" />
 
+        {/* Location Section */}
         <Input
           label="Hometown"
           placeholder="City, State"
@@ -53,7 +62,8 @@ export const ProfileStep2Screen: React.FC<ProfileStep2ScreenProps> = ({ navigati
           onChangeText={setCurrentCity}
         />
 
-        <View style={styles.formGroup}>
+        {/* Education Section */}
+        <View style={styles.section}>
           <Text style={styles.label}>Education</Text>
           <View style={styles.pickerContainer}>
             <Picker
@@ -81,6 +91,7 @@ export const ProfileStep2Screen: React.FC<ProfileStep2ScreenProps> = ({ navigati
           onChangeText={setCollege}
         />
 
+        {/* Career Section */}
         <Input
           label="Occupation"
           placeholder="e.g., Software Engineer"
@@ -95,78 +106,43 @@ export const ProfileStep2Screen: React.FC<ProfileStep2ScreenProps> = ({ navigati
           onChangeText={setJobTitle}
         />
 
-        <View style={styles.buttonGroup}>
-          <Button
-            title="← Back"
-            variant="secondary"
-            onPress={handleBack}
-            style={{ flex: 1, marginRight: spacing.s3 }}
-          />
-          <Button
-            title="Continue →"
-            onPress={handleContinue}
-            style={{ flex: 1 }}
-          />
-        </View>
+        {/* Navigation Buttons */}
+        <FormButtonGroup
+          onSecondary={handleBack}
+          onPrimary={handleContinue}
+        />
       </ScrollView>
-    </SafeAreaView>
+    </ScreenWrapper>
   );
 };
 
 const styles = StyleSheet.create({
-  container: {
+  scrollView: {
     flex: 1,
-    backgroundColor: colors.warm[50],
   },
-  header: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingHorizontal: spacing.s5,
-    paddingVertical: spacing.s4,
-    borderBottomWidth: 1,
-    borderBottomColor: colors.warm[200],
-    backgroundColor: colors.warm.white,
-  },
-  backButton: {
-    padding: spacing.s2,
-  },
-  backIcon: {
-    fontSize: typography.fontSize['2xl'],
-    color: colors.warm[600],
-  },
-  headerTitle: {
-    fontSize: typography.fontSize.xl,
-    fontWeight: typography.fontWeight.semibold,
-    color: colors.warm[800],
-    marginLeft: spacing.s4,
-  },
-  content: {
-    flex: 1,
+  scrollContent: {
     paddingHorizontal: spacing.s6,
-    paddingTop: spacing.s7,
+    paddingTop: spacing.s6,
+    paddingBottom: spacing.s10,
   },
-  formGroup: {
+  section: {
     marginBottom: spacing.s5,
   },
   label: {
     fontSize: typography.fontSize.sm,
     fontWeight: typography.fontWeight.semibold,
     color: colors.warm[700],
-    marginBottom: spacing.s2,
+    marginBottom: spacing.s3,
   },
   pickerContainer: {
     borderWidth: 2,
     borderColor: colors.warm[300],
-    borderRadius: 12,
+    borderRadius: radius.md,
     backgroundColor: colors.warm.white,
     overflow: 'hidden',
   },
   picker: {
-    height: 50,
-  },
-  buttonGroup: {
-    flexDirection: 'row',
-    marginTop: spacing.s6,
-    marginBottom: spacing.s8,
+    height: 52,
+    marginHorizontal: spacing.s2,
   },
 });

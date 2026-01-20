@@ -1,5 +1,5 @@
 import React from 'react';
-import { TouchableOpacity, Text, StyleSheet, ViewStyle, TextStyle } from 'react-native';
+import { TouchableOpacity, Text, StyleSheet, ViewStyle, ActivityIndicator } from 'react-native';
 import { colors, spacing, typography, radius, shadows } from '../theme';
 
 type ButtonVariant = 'primary' | 'secondary' | 'tertiary' | 'danger';
@@ -11,6 +11,7 @@ interface ButtonProps {
   variant?: ButtonVariant;
   size?: ButtonSize;
   disabled?: boolean;
+  loading?: boolean;
   style?: ViewStyle;
 }
 
@@ -20,22 +21,32 @@ export const Button: React.FC<ButtonProps> = ({
   variant = 'primary',
   size = 'medium',
   disabled = false,
+  loading = false,
   style,
 }) => {
+  const isDisabled = disabled || loading;
+
   return (
     <TouchableOpacity
       style={[
         styles.button,
         styles[variant],
         styles[size],
-        disabled && styles.disabled,
+        isDisabled && styles.disabled,
         style,
       ]}
       onPress={onPress}
-      disabled={disabled}
+      disabled={isDisabled}
       activeOpacity={0.7}
     >
-      <Text style={[styles.text, styles[`text_${variant}`]]}>{title}</Text>
+      {loading ? (
+        <ActivityIndicator 
+          color={variant === 'primary' ? colors.warm.white : colors.clay[600]} 
+          size="small" 
+        />
+      ) : (
+        <Text style={[styles.text, styles[`text_${variant}`]]}>{title}</Text>
+      )}
     </TouchableOpacity>
   );
 };
@@ -45,6 +56,8 @@ const styles = StyleSheet.create({
     borderRadius: radius.lg,
     alignItems: 'center',
     justifyContent: 'center',
+    flexDirection: 'row',
+    minHeight: 48,
     ...shadows.sm,
   },
   primary: {
@@ -57,6 +70,8 @@ const styles = StyleSheet.create({
   },
   tertiary: {
     backgroundColor: 'transparent',
+    shadowOpacity: 0,
+    elevation: 0,
   },
   danger: {
     backgroundColor: colors.clay[100],
@@ -66,6 +81,7 @@ const styles = StyleSheet.create({
   small: {
     paddingVertical: spacing.s3,
     paddingHorizontal: spacing.s4,
+    minHeight: 40,
   },
   medium: {
     paddingVertical: spacing.s4,
@@ -74,6 +90,7 @@ const styles = StyleSheet.create({
   large: {
     paddingVertical: spacing.s5,
     paddingHorizontal: spacing.s8,
+    minHeight: 56,
   },
   disabled: {
     opacity: 0.5,

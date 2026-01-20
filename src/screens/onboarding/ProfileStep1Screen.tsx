@@ -1,9 +1,16 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { View, Text, StyleSheet, ScrollView } from 'react-native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import { Button, Input, ProgressBar } from '../../components';
-import { colors, spacing, typography, radius } from '../../theme';
+import { 
+  ScreenWrapper, 
+  Header, 
+  Input, 
+  ProgressBar, 
+  RadioGroup, 
+  FormButtonGroup,
+  Row 
+} from '../../components';
+import { colors, spacing, typography } from '../../theme';
 import { RootStackParamList } from '../../types';
 
 type ProfileStep1ScreenProps = {
@@ -13,7 +20,7 @@ type ProfileStep1ScreenProps = {
 export const ProfileStep1Screen: React.FC<ProfileStep1ScreenProps> = ({ navigation }) => {
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
-  const [gender, setGender] = useState<'male' | 'female' | 'other' | null>(null);
+  const [gender, setGender] = useState<string | null>(null);
   const [day, setDay] = useState('');
   const [month, setMonth] = useState('');
   const [year, setYear] = useState('');
@@ -24,14 +31,22 @@ export const ProfileStep1Screen: React.FC<ProfileStep1ScreenProps> = ({ navigati
     navigation.navigate('ProfileStep2');
   };
 
+  const handleBack = () => {
+    navigation.goBack();
+  };
+
+  const genderOptions = [
+    { value: 'male', label: 'Male' },
+    { value: 'female', label: 'Female' },
+    { value: 'other', label: 'Other' },
+  ];
+
   return (
-    <SafeAreaView style={styles.container} edges={['top', 'bottom']}>
-      <View style={styles.header}>
-        <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
-          <Text style={styles.backIcon}>←</Text>
-        </TouchableOpacity>
-        <Text style={styles.headerTitle}>Create Profile</Text>
-      </View>
+    <ScreenWrapper edges={['top', 'bottom']}>
+      <Header 
+        title="Create Profile" 
+        onBack={handleBack}
+      />
 
       <ScrollView 
         style={styles.scrollView}
@@ -41,73 +56,63 @@ export const ProfileStep1Screen: React.FC<ProfileStep1ScreenProps> = ({ navigati
       >
         <ProgressBar progress={25} label="Step 1 of 4 - Basic Information" />
 
-        <Input
-          label="First Name"
-          placeholder="Enter first name"
-          value={firstName}
-          onChangeText={setFirstName}
-        />
+        {/* Name Section */}
+        <View style={styles.section}>
+          <Input
+            label="First Name"
+            placeholder="Enter first name"
+            value={firstName}
+            onChangeText={setFirstName}
+          />
 
-        <Input
-          label="Last Name"
-          placeholder="Enter last name"
-          value={lastName}
-          onChangeText={setLastName}
-        />
-
-        <View style={styles.formGroup}>
-          <Text style={styles.label}>Gender</Text>
-          <View style={styles.radioGroup}>
-            {(['male', 'female', 'other'] as const).map((option) => (
-              <TouchableOpacity
-                key={option}
-                style={[
-                  styles.radioOption,
-                  gender === option && styles.radioOptionSelected,
-                ]}
-                onPress={() => setGender(option)}
-              >
-                <Text
-                  style={[
-                    styles.radioText,
-                    gender === option && styles.radioTextSelected,
-                  ]}
-                >
-                  {option.charAt(0).toUpperCase() + option.slice(1)}
-                </Text>
-              </TouchableOpacity>
-            ))}
-          </View>
+          <Input
+            label="Last Name"
+            placeholder="Enter last name"
+            value={lastName}
+            onChangeText={setLastName}
+          />
         </View>
 
-        <View style={styles.formGroup}>
+        {/* Gender Section */}
+        <RadioGroup
+          label="Gender"
+          options={genderOptions}
+          value={gender}
+          onChange={setGender}
+        />
+
+        {/* Date of Birth Section */}
+        <View style={styles.section}>
           <Text style={styles.label}>Date of Birth</Text>
-          <View style={styles.inputRow}>
-            <Input
-              placeholder="DD"
-              keyboardType="number-pad"
-              maxLength={2}
-              value={day}
-              onChangeText={setDay}
-              style={{ flex: 1 }}
-            />
-            <Input
-              placeholder="MM"
-              keyboardType="number-pad"
-              maxLength={2}
-              value={month}
-              onChangeText={setMonth}
-              style={{ flex: 1, marginLeft: spacing.s3 }}
-            />
-            <Input
-              placeholder="YYYY"
-              keyboardType="number-pad"
-              maxLength={4}
-              value={year}
-              onChangeText={setYear}
-              style={{ flex: 1, marginLeft: spacing.s3 }}
-            />
-          </View>
+          <Row gap={spacing.s3}>
+            <View style={styles.flexInput}>
+              <Input
+                placeholder="DD"
+                keyboardType="number-pad"
+                maxLength={2}
+                value={day}
+                onChangeText={setDay}
+              />
+            </View>
+            <View style={styles.flexInput}>
+              <Input
+                placeholder="MM"
+                keyboardType="number-pad"
+                maxLength={2}
+                value={month}
+                onChangeText={setMonth}
+              />
+            </View>
+            <View style={styles.flexInput}>
+              <Input
+                placeholder="YYYY"
+                keyboardType="number-pad"
+                maxLength={4}
+                value={year}
+                onChangeText={setYear}
+              />
+            </View>
+          </Row>
           {year && parseInt(year) > 1900 && (
             <Text style={styles.helperText}>
               Age: {new Date().getFullYear() - parseInt(year)} (auto-calculated)
@@ -115,75 +120,46 @@ export const ProfileStep1Screen: React.FC<ProfileStep1ScreenProps> = ({ navigati
           )}
         </View>
 
-        <View style={styles.formGroup}>
+        {/* Height Section */}
+        <View style={styles.section}>
           <Text style={styles.label}>Height</Text>
-          <View style={styles.inputRow}>
-            <Input
-              placeholder="5"
-              keyboardType="number-pad"
-              maxLength={1}
-              value={feet}
-              onChangeText={setFeet}
-              style={{ flex: 1 }}
-            />
+          <Row gap={spacing.s3} align="center">
+            <View style={styles.flexInput}>
+              <Input
+                placeholder="5"
+                keyboardType="number-pad"
+                maxLength={1}
+                value={feet}
+                onChangeText={setFeet}
+              />
+            </View>
             <Text style={styles.unitText}>ft</Text>
-            <Input
-              placeholder="8"
-              keyboardType="number-pad"
-              maxLength={2}
-              value={inches}
-              onChangeText={setInches}
-              style={{ flex: 1, marginLeft: spacing.s3 }}
-            />
+            <View style={styles.flexInput}>
+              <Input
+                placeholder="8"
+                keyboardType="number-pad"
+                maxLength={2}
+                value={inches}
+                onChangeText={setInches}
+              />
+            </View>
             <Text style={styles.unitText}>in</Text>
-          </View>
+          </Row>
         </View>
 
-        <View style={styles.buttonGroup}>
-          <Button
-            title="Skip"
-            variant="secondary"
-            onPress={handleContinue}
-            style={{ flex: 1, marginRight: spacing.s3 }}
-          />
-          <Button
-            title="Continue →"
-            onPress={handleContinue}
-            style={{ flex: 1 }}
-          />
-        </View>
+        {/* Navigation Buttons */}
+        <FormButtonGroup
+          onSecondary={handleBack}
+          secondaryLabel="Skip"
+          onPrimary={handleContinue}
+          primaryLabel="Continue →"
+        />
       </ScrollView>
-    </SafeAreaView>
+    </ScreenWrapper>
   );
 };
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: colors.warm[50],
-  },
-  header: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingHorizontal: spacing.s5,
-    paddingVertical: spacing.s4,
-    borderBottomWidth: 1,
-    borderBottomColor: colors.warm[200],
-    backgroundColor: colors.warm.white,
-  },
-  backButton: {
-    padding: spacing.s2,
-  },
-  backIcon: {
-    fontSize: typography.fontSize['2xl'],
-    color: colors.warm[600],
-  },
-  headerTitle: {
-    fontSize: typography.fontSize.xl,
-    fontWeight: typography.fontWeight.semibold,
-    color: colors.warm[800],
-    marginLeft: spacing.s4,
-  },
   scrollView: {
     flex: 1,
   },
@@ -192,58 +168,28 @@ const styles = StyleSheet.create({
     paddingTop: spacing.s6,
     paddingBottom: spacing.s10,
   },
-  formGroup: {
-    marginBottom: spacing.s5,
+  section: {
+    marginBottom: spacing.s2,
   },
   label: {
     fontSize: typography.fontSize.sm,
     fontWeight: typography.fontWeight.semibold,
     color: colors.warm[700],
-    marginBottom: spacing.s2,
+    marginBottom: spacing.s3,
   },
-  radioGroup: {
-    flexDirection: 'row',
-    gap: spacing.s4,
-  },
-  radioOption: {
+  flexInput: {
     flex: 1,
-    paddingVertical: spacing.s4,
-    borderWidth: 2,
-    borderColor: colors.warm[300],
-    borderRadius: radius.md,
-    alignItems: 'center',
-    backgroundColor: colors.warm.white,
-  },
-  radioOptionSelected: {
-    borderColor: colors.clay[500],
-    backgroundColor: colors.clay[50],
-  },
-  radioText: {
-    fontSize: typography.fontSize.base,
-    fontWeight: typography.fontWeight.medium,
-    color: colors.warm[700],
-  },
-  radioTextSelected: {
-    color: colors.clay[700],
-  },
-  inputRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
   },
   unitText: {
     fontSize: typography.fontSize.base,
+    fontWeight: typography.fontWeight.medium,
     color: colors.warm[600],
-    marginLeft: spacing.s2,
-    marginRight: spacing.s2,
+    minWidth: 24,
+    textAlign: 'center',
   },
   helperText: {
     fontSize: typography.fontSize.sm,
-    color: colors.warm[500],
-    marginTop: spacing.s2,
-  },
-  buttonGroup: {
-    flexDirection: 'row',
-    marginTop: spacing.s6,
-    marginBottom: spacing.s4,
+    color: colors.sage[600],
+    marginTop: spacing.s1,
   },
 });

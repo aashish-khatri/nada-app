@@ -1,8 +1,7 @@
 import React from 'react';
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
-
-import { colors, spacing, typography, radius, shadows } from '../../theme';
+import { ScreenWrapper, Header, Row } from '../../components';
+import { colors, spacing, typography, radius } from '../../theme';
 
 export const ChatListScreen: React.FC = () => {
   const mockChats = [
@@ -30,117 +29,113 @@ export const ChatListScreen: React.FC = () => {
   ];
 
   return (
-    <SafeAreaView style={styles.container} edges={['top', 'bottom']}>
-      <View style={styles.header}>
-        <Text style={styles.headerTitle}>Messages</Text>
-      </View>
+    <ScreenWrapper edges={['top']}>
+      <Header title="Messages" showBorder />
 
-      <ScrollView style={styles.content} showsVerticalScrollIndicator={false}>
+      <ScrollView 
+        style={styles.content} 
+        contentContainerStyle={styles.contentContainer}
+        showsVerticalScrollIndicator={false}
+      >
         {mockChats.map((chat) => (
-          <TouchableOpacity key={chat.id} style={styles.chatItem}>
-            <View style={styles.avatar}>
-              <Text style={styles.avatarEmoji}>👤</Text>
-            </View>
+          <TouchableOpacity 
+            key={chat.id} 
+            style={styles.chatItem}
+            activeOpacity={0.7}
+          >
+            <Row gap={spacing.s4} align="center">
+              {/* Avatar */}
+              <View style={styles.avatar}>
+                <Text style={styles.avatarEmoji}>👤</Text>
+              </View>
 
-            <View style={styles.chatContent}>
-              <View style={styles.chatHeader}>
-                <Text style={styles.chatName}>{chat.name}</Text>
-                <Text style={styles.chatTime}>{chat.time}</Text>
+              {/* Chat Content */}
+              <View style={styles.chatContent}>
+                <Row justify="space-between" align="center" style={styles.chatHeader}>
+                  <Text style={styles.chatName} numberOfLines={1}>{chat.name}</Text>
+                  <Text style={[styles.chatTime, chat.unread > 0 && styles.chatTimeUnread]}>
+                    {chat.time}
+                  </Text>
+                </Row>
+                <Row justify="space-between" align="center">
+                  <Text style={styles.chatMessage} numberOfLines={1}>
+                    {chat.lastMessage}
+                  </Text>
+                  {chat.unread > 0 && (
+                    <View style={styles.unreadBadge}>
+                      <Text style={styles.unreadText}>{chat.unread}</Text>
+                    </View>
+                  )}
+                </Row>
               </View>
-              <View style={styles.messageRow}>
-                <Text style={styles.chatMessage} numberOfLines={1}>
-                  {chat.lastMessage}
-                </Text>
-                {chat.unread > 0 && (
-                  <View style={styles.unreadBadge}>
-                    <Text style={styles.unreadText}>{chat.unread}</Text>
-                  </View>
-                )}
-              </View>
-            </View>
+            </Row>
           </TouchableOpacity>
         ))}
       </ScrollView>
-    </SafeAreaView>
+    </ScreenWrapper>
   );
 };
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: colors.warm[50],
-  },
-  header: {
-    paddingHorizontal: spacing.s5,
-    paddingVertical: spacing.s4,
-    backgroundColor: colors.warm.white,
-    borderBottomWidth: 1,
-    borderBottomColor: colors.warm[200],
-  },
-  headerTitle: {
-    fontSize: typography.fontSize.xl,
-    fontWeight: typography.fontWeight.semibold,
-    color: colors.warm[800],
-  },
   content: {
     flex: 1,
   },
+  contentContainer: {
+    paddingTop: spacing.s2,
+  },
   chatItem: {
-    flexDirection: 'row',
     paddingHorizontal: spacing.s5,
     paddingVertical: spacing.s4,
-    gap: spacing.s4,
     backgroundColor: colors.warm.white,
     borderBottomWidth: 1,
-    borderBottomColor: colors.warm[200],
+    borderBottomColor: colors.warm[100],
   },
   avatar: {
-    width: 56,
-    height: 56,
+    width: 52,
+    height: 52,
     borderRadius: radius.lg,
-    backgroundColor: colors.clay[200],
+    backgroundColor: colors.clay[100],
     justifyContent: 'center',
     alignItems: 'center',
   },
   avatarEmoji: {
-    fontSize: 28,
+    fontSize: 24,
   },
   chatContent: {
     flex: 1,
   },
   chatHeader: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginBottom: spacing.s2,
+    marginBottom: spacing.s1,
   },
   chatName: {
+    flex: 1,
     fontSize: typography.fontSize.base,
     fontWeight: typography.fontWeight.semibold,
     color: colors.warm[800],
+    marginRight: spacing.s2,
   },
   chatTime: {
     fontSize: typography.fontSize.xs,
-    color: colors.warm[500],
+    color: colors.warm[400],
   },
-  messageRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
+  chatTimeUnread: {
+    color: colors.clay[600],
+    fontWeight: typography.fontWeight.semibold,
   },
   chatMessage: {
     flex: 1,
     fontSize: typography.fontSize.sm,
-    color: colors.warm[600],
+    color: colors.warm[500],
+    marginRight: spacing.s2,
   },
   unreadBadge: {
     backgroundColor: colors.clay[600],
     borderRadius: radius.full,
-    minWidth: 20,
-    height: 20,
+    minWidth: 22,
+    height: 22,
     justifyContent: 'center',
     alignItems: 'center',
-    marginLeft: spacing.s2,
+    paddingHorizontal: spacing.s2,
   },
   unreadText: {
     color: colors.warm.white,

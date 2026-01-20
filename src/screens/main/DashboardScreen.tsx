@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text, StyleSheet,  ScrollView, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { Card, Tag, Button } from '../../components';
 import { colors, spacing, typography, radius, shadows } from '../../theme';
@@ -61,85 +61,78 @@ export const DashboardScreen: React.FC<DashboardScreenProps> = ({ navigation }) 
     return labels[degree] || '3+ Connections';
   };
 
-  return (
-    <SafeAreaView style={styles.container} edges={['top', 'bottom']}>
-      <View style={styles.header}>
-        <Text style={styles.headerTitle}>Discover</Text>
-        <View style={styles.headerActions}>
-          <TouchableOpacity style={styles.iconButton}>
-            <Text style={styles.iconButtonText}>🔔</Text>
-            <View style={styles.badge}>
-              <Text style={styles.badgeText}>3</Text>
-            </View>
-          </TouchableOpacity>
+   return (
+    <View style={styles.container}>
+      <SafeAreaView edges={['top']} style={styles.safeHeader}>
+        <View style={styles.header}>
+          <Text style={styles.headerTitle}>Discover</Text>
+          <View style={styles.headerActions}>
+            <TouchableOpacity style={styles.iconButton}>
+              <Text style={styles.iconButtonText}>🔔</Text>
+              <View style={styles.badge}>
+                <Text style={styles.badgeText}>3</Text>
+              </View>
+            </TouchableOpacity>
+          </View>
         </View>
-      </View>
+      </SafeAreaView>
 
-      <ScrollView style={styles.content} showsVerticalScrollIndicator={false}>
-        {/* Quick Stats */}
+      <ScrollView 
+        style={styles.content} 
+        contentContainerStyle={styles.contentContainer}
+        showsVerticalScrollIndicator={false}
+      >
+        {/* Stats Section */}
         <View style={styles.statsContainer}>
           <View style={styles.statBox}>
-            <Text style={styles.statNumber}>23</Text>
-            <Text style={styles.statLabel}>Network</Text>
+            <Text style={styles.statNumber}>12</Text>
+            <Text style={styles.statLabel}>Profile Views</Text>
           </View>
           <View style={styles.statBox}>
-            <Text style={[styles.statNumber, { color: colors.gold[500] }]}>5</Text>
-            <Text style={styles.statLabel}>Pending</Text>
+            <Text style={styles.statNumber}>5</Text>
+            <Text style={styles.statLabel}>Requests</Text>
           </View>
           <View style={styles.statBox}>
-            <Text style={[styles.statNumber, { color: colors.sage[500] }]}>2</Text>
-            <Text style={styles.statLabel}>Messages</Text>
-          </View>
-          <View style={styles.statBox}>
-            <Text style={[styles.statNumber, { color: colors.indigo[500] }]}>567</Text>
-            <Text style={styles.statLabel}>Points</Text>
+            <Text style={styles.statNumber}>3</Text>
+            <Text style={styles.statLabel}>Matches</Text>
           </View>
         </View>
 
-        <Text style={styles.sectionTitle}>Recommended Matches</Text>
+        {/* Matches Section */}
+        <Text style={styles.sectionTitle}>Suggested Matches</Text>
 
-        {/* Profile Cards */}
         {mockMatches.map((match) => (
           <Card key={match.id} style={styles.profileCard}>
             <View style={styles.profileImagePlaceholder}>
               <Text style={styles.profileEmoji}>👤</Text>
-              <View
-                style={[
-                  styles.degreeBadge,
-                  { backgroundColor: getDegreeColor(match.degree) },
-                ]}
-              >
-                <Text style={styles.degreeBadgeText}>
-                  {getDegreeLabel(match.degree)}
-                </Text>
+              <View style={[styles.degreeBadge, { backgroundColor: getDegreeColor(match.degree) }]}>
+                <Text style={styles.degreeBadgeText}>{getDegreeLabel(match.degree)}</Text>
               </View>
             </View>
-
             <View style={styles.profileContent}>
               <Text style={styles.profileName}>
                 {match.name}, {match.age}
+                {match.verified && ' ✓'}
               </Text>
               <View style={styles.profileDetails}>
-                <Text style={styles.profileDetailText}>{match.location}</Text>
-                <Text style={styles.profileDetailText}> • </Text>
-                <Text style={styles.profileDetailText}>{match.occupation}</Text>
+                <Text style={styles.profileDetailText}>
+                  {match.location} • {match.occupation}
+                </Text>
               </View>
-
               <View style={styles.tagContainer}>
-                <Tag label="Family-Oriented" variant="sage" />
-                {match.verified && <Tag label="✓ Verified" variant="gold" />}
+                <Tag label={match.occupation} />
+                {match.verified && <Tag label="Verified" variant="gold" />}
               </View>
-
               <View style={styles.buttonGroup}>
                 <Button
-                  title="Send Interest"
+                  title="Skip"
+                  variant="secondary"
                   size="small"
                   onPress={() => {}}
-                  style={{ flex: 1, marginRight: spacing.s2 }}
+                  style={{ flex: 1 }}
                 />
                 <Button
-                  title="View Profile"
-                  variant="secondary"
+                  title="Connect"
                   size="small"
                   onPress={() => {}}
                   style={{ flex: 1 }}
@@ -149,7 +142,7 @@ export const DashboardScreen: React.FC<DashboardScreenProps> = ({ navigation }) 
           </Card>
         ))}
       </ScrollView>
-    </SafeAreaView>
+    </View>
   );
 };
 
@@ -158,15 +151,17 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: colors.warm[50],
   },
+  safeHeader: {
+    backgroundColor: colors.warm.white,
+    borderBottomWidth: 1,
+    borderBottomColor: colors.warm[200],
+  },
   header: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
     paddingHorizontal: spacing.s5,
     paddingVertical: spacing.s4,
-    backgroundColor: colors.warm.white,
-    borderBottomWidth: 1,
-    borderBottomColor: colors.warm[200],
   },
   headerTitle: {
     fontSize: typography.fontSize.xl,
@@ -175,11 +170,11 @@ const styles = StyleSheet.create({
   },
   headerActions: {
     flexDirection: 'row',
-    gap: spacing.s3,
+    alignItems: 'center',
   },
   iconButton: {
-    padding: spacing.s2,
     position: 'relative',
+    padding: spacing.s2,
   },
   iconButtonText: {
     fontSize: typography.fontSize['2xl'],
@@ -190,21 +185,23 @@ const styles = StyleSheet.create({
     right: 0,
     backgroundColor: colors.clay[600],
     borderRadius: radius.full,
-    minWidth: 16,
-    height: 16,
+    minWidth: 18,
+    height: 18,
     justifyContent: 'center',
     alignItems: 'center',
-    paddingHorizontal: 4,
   },
   badgeText: {
     color: colors.warm.white,
-    fontSize: 10,
-    fontWeight: typography.fontWeight.semibold,
+    fontSize: typography.fontSize.xs,
+    fontWeight: typography.fontWeight.bold,
   },
   content: {
     flex: 1,
+  },
+  contentContainer: {
     paddingHorizontal: spacing.s5,
     paddingTop: spacing.s5,
+    paddingBottom: spacing.s8,
   },
   statsContainer: {
     flexDirection: 'row',

@@ -1,8 +1,7 @@
 import React, { useState } from 'react';
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
-import { Card } from '../../components';
+import { ScreenWrapper, Header, Card, Row } from '../../components';
 import { colors, spacing, typography, radius, shadows } from '../../theme';
-import { SafeAreaView } from 'react-native-safe-area-context';
 
 export const ActivityScreen: React.FC = () => {
   const [activeTab, setActiveTab] = useState<'sent' | 'received'>('received');
@@ -27,16 +26,15 @@ export const ActivityScreen: React.FC = () => {
   ];
 
   return (
-    <SafeAreaView style={styles.container} edges={['top', 'bottom']}>
-      <View style={styles.header}>
-        <Text style={styles.headerTitle}>Activity</Text>
-      </View>
+    <ScreenWrapper edges={['top']}>
+      <Header title="Activity" showBorder />
 
-      {/* Tabs */}
+      {/* Tab Bar */}
       <View style={styles.tabContainer}>
         <TouchableOpacity
           style={[styles.tab, activeTab === 'received' && styles.tabActive]}
           onPress={() => setActiveTab('received')}
+          activeOpacity={0.8}
         >
           <Text style={[styles.tabText, activeTab === 'received' && styles.tabTextActive]}>
             Received (3)
@@ -45,6 +43,7 @@ export const ActivityScreen: React.FC = () => {
         <TouchableOpacity
           style={[styles.tab, activeTab === 'sent' && styles.tabActive]}
           onPress={() => setActiveTab('sent')}
+          activeOpacity={0.8}
         >
           <Text style={[styles.tabText, activeTab === 'sent' && styles.tabTextActive]}>
             Sent (5)
@@ -52,81 +51,72 @@ export const ActivityScreen: React.FC = () => {
         </TouchableOpacity>
       </View>
 
-      <ScrollView style={styles.content} showsVerticalScrollIndicator={false}>
+      {/* Activity List */}
+      <ScrollView 
+        style={styles.content} 
+        contentContainerStyle={styles.contentContainer}
+        showsVerticalScrollIndicator={false}
+      >
         {mockRequests.map((request) => (
           <Card key={request.id} style={styles.activityCard}>
-            <View style={styles.activityItem}>
+            <Row gap={spacing.s4} align="flex-start">
+              {/* Avatar */}
               <View style={styles.avatar}>
                 <Text style={styles.avatarEmoji}>👤</Text>
               </View>
 
+              {/* Content */}
               <View style={styles.activityContent}>
-                <View style={styles.activityHeader}>
-                  <View>
+                <Row justify="space-between" align="flex-start" style={styles.activityHeader}>
+                  <View style={styles.nameContainer}>
                     <Text style={styles.activityName}>{request.name}</Text>
                     <Text style={styles.activityDetails}>
                       {request.location} • {request.age} years
                     </Text>
                   </View>
                   <Text style={styles.activityTime}>{request.time}</Text>
-                </View>
+                </Row>
 
-                <View
-                  style={[
-                    styles.statusBadge,
-                    request.status === 'pending'
-                      ? styles.statusPending
-                      : styles.statusApproved,
-                  ]}
-                >
+                {/* Status Badge */}
+                <View style={[
+                  styles.statusBadge,
+                  request.status === 'pending' ? styles.statusPending : styles.statusApproved,
+                ]}>
                   <Text style={styles.statusText}>
                     {request.status === 'pending' ? '⏳ Pending' : '✓ Approved'}
                   </Text>
                 </View>
 
+                {/* Action Buttons */}
                 {request.status === 'pending' && activeTab === 'received' && (
-                  <View style={styles.actionButtons}>
+                  <Row gap={spacing.s3} style={styles.actionButtons}>
                     <TouchableOpacity style={styles.approveButton}>
                       <Text style={styles.approveButtonText}>Accept</Text>
                     </TouchableOpacity>
                     <TouchableOpacity style={styles.rejectButton}>
                       <Text style={styles.rejectButtonText}>Decline</Text>
                     </TouchableOpacity>
-                  </View>
+                  </Row>
                 )}
               </View>
-            </View>
+            </Row>
           </Card>
         ))}
       </ScrollView>
-    </SafeAreaView>
+    </ScreenWrapper>
   );
 };
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: colors.warm[50],
-  },
-  header: {
-    paddingHorizontal: spacing.s5,
-    paddingVertical: spacing.s4,
-    backgroundColor: colors.warm.white,
-    borderBottomWidth: 1,
-    borderBottomColor: colors.warm[200],
-  },
-  headerTitle: {
-    fontSize: typography.fontSize.xl,
-    fontWeight: typography.fontWeight.semibold,
-    color: colors.warm[800],
-  },
   tabContainer: {
     flexDirection: 'row',
     backgroundColor: colors.warm[100],
-    margin: spacing.s5,
+    marginHorizontal: spacing.s5,
+    marginTop: spacing.s5,
+    marginBottom: spacing.s4,
     borderRadius: radius.lg,
-    padding: spacing.s2,
-    gap: spacing.s2,
+    padding: spacing.s1,
+    gap: spacing.s1,
   },
   tab: {
     flex: 1,
@@ -148,34 +138,33 @@ const styles = StyleSheet.create({
   },
   content: {
     flex: 1,
+  },
+  contentContainer: {
     paddingHorizontal: spacing.s5,
+    paddingBottom: spacing.s8,
   },
   activityCard: {
     marginBottom: spacing.s4,
   },
-  activityItem: {
-    flexDirection: 'row',
-    gap: spacing.s4,
-  },
   avatar: {
-    width: 60,
-    height: 60,
+    width: 56,
+    height: 56,
     borderRadius: radius.lg,
-    backgroundColor: colors.clay[200],
+    backgroundColor: colors.clay[100],
     justifyContent: 'center',
     alignItems: 'center',
   },
   avatarEmoji: {
-    fontSize: 32,
+    fontSize: 28,
   },
   activityContent: {
     flex: 1,
   },
   activityHeader: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'flex-start',
-    marginBottom: spacing.s2,
+    marginBottom: spacing.s3,
+  },
+  nameContainer: {
+    flex: 1,
   },
   activityName: {
     fontSize: typography.fontSize.base,
@@ -190,6 +179,7 @@ const styles = StyleSheet.create({
   activityTime: {
     fontSize: typography.fontSize.xs,
     color: colors.warm[500],
+    marginLeft: spacing.s2,
   },
   statusBadge: {
     alignSelf: 'flex-start',
@@ -210,8 +200,7 @@ const styles = StyleSheet.create({
     color: colors.warm[800],
   },
   actionButtons: {
-    flexDirection: 'row',
-    gap: spacing.s2,
+    marginTop: spacing.s1,
   },
   approveButton: {
     flex: 1,

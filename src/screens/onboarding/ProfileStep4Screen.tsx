@@ -1,10 +1,15 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet,  ScrollView, TouchableOpacity, TextInput } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, TextInput } from 'react-native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import { Button, ProgressBar } from '../../components';
+import { 
+  ScreenWrapper, 
+  Header, 
+  ProgressBar, 
+  RadioGroup,
+  FormButtonGroup 
+} from '../../components';
 import { colors, spacing, typography, radius } from '../../theme';
 import { RootStackParamList } from '../../types';
-import { SafeAreaView } from 'react-native-safe-area-context';
 
 type ProfileStep4ScreenProps = {
   navigation: NativeStackNavigationProp<RootStackParamList, 'ProfileStep4'>;
@@ -26,229 +31,162 @@ export const ProfileStep4Screen: React.FC<ProfileStep4ScreenProps> = ({ navigati
     navigation.goBack();
   };
 
-  return (
-    <SafeAreaView style={styles.container} edges={['top', 'bottom']}>
-      <View style={styles.header}>
-        <TouchableOpacity onPress={handleBack} style={styles.backButton}>
-          <Text style={styles.backIcon}>←</Text>
-        </TouchableOpacity>
-        <Text style={styles.headerTitle}>Create Profile</Text>
-      </View>
+  const drinkingOptions = [
+    { value: 'never', label: 'Never' },
+    { value: 'socially', label: 'Socially' },
+    { value: 'regularly', label: 'Regularly' },
+  ];
 
-      <ScrollView style={styles.content} showsVerticalScrollIndicator={false}>
+  const smokingOptions = [
+    { value: 'never', label: 'Never' },
+    { value: 'occasionally', label: 'Occasionally' },
+    { value: 'regularly', label: 'Regularly' },
+  ];
+
+  const childrenOptions = [
+    { value: 'want', label: 'Want' },
+    { value: 'dont-want', label: "Don't Want" },
+    { value: 'open', label: 'Open' },
+  ];
+
+  return (
+    <ScreenWrapper edges={['top', 'bottom']}>
+      <Header 
+        title="Create Profile" 
+        onBack={handleBack}
+      />
+
+      <ScrollView 
+        style={styles.scrollView}
+        contentContainerStyle={styles.scrollContent}
+        showsVerticalScrollIndicator={false}
+        keyboardShouldPersistTaps="handled"
+      >
         <ProgressBar progress={100} label="Step 4 of 4 - About You" />
 
-        <View style={styles.formGroup}>
+        {/* Bio Section */}
+        <View style={styles.section}>
           <Text style={styles.label}>Bio</Text>
           <TextInput
             style={styles.textArea}
-            placeholder="Tell us about yourself..."
+            placeholder="Tell us about yourself, your interests, values, and what you're looking for..."
             placeholderTextColor={colors.warm[400]}
             multiline
-            numberOfLines={4}
+            numberOfLines={5}
             maxLength={maxBioLength}
             value={bio}
             onChangeText={setBio}
+            textAlignVertical="top"
           />
-          <Text style={styles.charCount}>
-            {maxBioLength - bio.length} characters remaining
-          </Text>
-        </View>
-
-        <View style={styles.formGroup}>
-          <Text style={styles.label}>Drinking Habits</Text>
-          <View style={styles.radioGroup}>
-            {[
-              { value: 'never', label: 'Never' },
-              { value: 'socially', label: 'Socially' },
-              { value: 'regularly', label: 'Regularly' },
-            ].map((option) => (
-              <TouchableOpacity
-                key={option.value}
+          <View style={styles.charCountContainer}>
+            <View style={styles.charCountBar}>
+              <View 
                 style={[
-                  styles.radioOption,
-                  drinking === option.value && styles.radioOptionSelected,
-                ]}
-                onPress={() => setDrinking(option.value)}
-              >
-                <Text
-                  style={[
-                    styles.radioText,
-                    drinking === option.value && styles.radioTextSelected,
-                  ]}
-                >
-                  {option.label}
-                </Text>
-              </TouchableOpacity>
-            ))}
+                  styles.charCountFill, 
+                  { width: `${(bio.length / maxBioLength) * 100}%` }
+                ]} 
+              />
+            </View>
+            <Text style={styles.charCount}>
+              {maxBioLength - bio.length} left
+            </Text>
           </View>
         </View>
 
-        <View style={styles.formGroup}>
-          <Text style={styles.label}>Smoking Habits</Text>
-          <View style={styles.radioGroup}>
-            {[
-              { value: 'never', label: 'Never' },
-              { value: 'occasionally', label: 'Occasionally' },
-              { value: 'regularly', label: 'Regularly' },
-            ].map((option) => (
-              <TouchableOpacity
-                key={option.value}
-                style={[
-                  styles.radioOption,
-                  smoking === option.value && styles.radioOptionSelected,
-                ]}
-                onPress={() => setSmoking(option.value)}
-              >
-                <Text
-                  style={[
-                    styles.radioText,
-                    smoking === option.value && styles.radioTextSelected,
-                  ]}
-                >
-                  {option.label}
-                </Text>
-              </TouchableOpacity>
-            ))}
-          </View>
-        </View>
+        {/* Lifestyle Preferences */}
+        <Text style={styles.sectionTitle}>Lifestyle</Text>
 
-        <View style={styles.formGroup}>
-          <Text style={styles.label}>Children Plans</Text>
-          <View style={styles.radioGroup}>
-            {[
-              { value: 'want', label: 'Want' },
-              { value: 'dont-want', label: "Don't Want" },
-              { value: 'open', label: 'Open' },
-            ].map((option) => (
-              <TouchableOpacity
-                key={option.value}
-                style={[
-                  styles.radioOption,
-                  children === option.value && styles.radioOptionSelected,
-                ]}
-                onPress={() => setChildren(option.value)}
-              >
-                <Text
-                  style={[
-                    styles.radioText,
-                    children === option.value && styles.radioTextSelected,
-                  ]}
-                >
-                  {option.label}
-                </Text>
-              </TouchableOpacity>
-            ))}
-          </View>
-        </View>
+        <RadioGroup
+          label="Drinking Habits"
+          options={drinkingOptions}
+          value={drinking}
+          onChange={setDrinking}
+        />
 
-        <View style={styles.buttonGroup}>
-          <Button
-            title="← Back"
-            variant="secondary"
-            onPress={handleBack}
-            style={{ flex: 1, marginRight: spacing.s3 }}
-          />
-          <Button
-            title="Continue →"
-            onPress={handleContinue}
-            style={{ flex: 1 }}
-          />
-        </View>
+        <RadioGroup
+          label="Smoking Habits"
+          options={smokingOptions}
+          value={smoking}
+          onChange={setSmoking}
+        />
+
+        <RadioGroup
+          label="Children Plans"
+          options={childrenOptions}
+          value={children}
+          onChange={setChildren}
+        />
+
+        {/* Navigation Buttons */}
+        <FormButtonGroup
+          onSecondary={handleBack}
+          onPrimary={handleContinue}
+        />
       </ScrollView>
-    </SafeAreaView>
+    </ScreenWrapper>
   );
 };
 
 const styles = StyleSheet.create({
-  container: {
+  scrollView: {
     flex: 1,
-    backgroundColor: colors.warm[50],
   },
-  header: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingHorizontal: spacing.s5,
-    paddingVertical: spacing.s4,
-    borderBottomWidth: 1,
-    borderBottomColor: colors.warm[200],
-    backgroundColor: colors.warm.white,
-  },
-  backButton: {
-    padding: spacing.s2,
-  },
-  backIcon: {
-    fontSize: typography.fontSize['2xl'],
-    color: colors.warm[600],
-  },
-  headerTitle: {
-    fontSize: typography.fontSize.xl,
-    fontWeight: typography.fontWeight.semibold,
-    color: colors.warm[800],
-    marginLeft: spacing.s4,
-  },
-  content: {
-    flex: 1,
+  scrollContent: {
     paddingHorizontal: spacing.s6,
-    paddingTop: spacing.s7,
+    paddingTop: spacing.s6,
+    paddingBottom: spacing.s10,
   },
-  formGroup: {
-    marginBottom: spacing.s5,
+  section: {
+    marginBottom: spacing.s6,
   },
   label: {
     fontSize: typography.fontSize.sm,
     fontWeight: typography.fontWeight.semibold,
     color: colors.warm[700],
-    marginBottom: spacing.s2,
+    marginBottom: spacing.s3,
+  },
+  sectionTitle: {
+    fontSize: typography.fontSize.lg,
+    fontWeight: typography.fontWeight.bold,
+    color: colors.warm[800],
+    marginBottom: spacing.s5,
+    marginTop: spacing.s2,
   },
   textArea: {
     width: '100%',
-    minHeight: 120,
+    minHeight: 140,
     paddingVertical: spacing.s4,
     paddingHorizontal: spacing.s4,
     borderWidth: 2,
     borderColor: colors.warm[300],
-    borderRadius: radius.md,
+    borderRadius: radius.lg,
     fontSize: typography.fontSize.base,
+    lineHeight: typography.fontSize.base * 1.5,
     color: colors.warm[800],
     backgroundColor: colors.warm.white,
-    textAlignVertical: 'top',
+  },
+  charCountContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginTop: spacing.s3,
+    gap: spacing.s3,
+  },
+  charCountBar: {
+    flex: 1,
+    height: 4,
+    backgroundColor: colors.warm[200],
+    borderRadius: radius.full,
+    overflow: 'hidden',
+  },
+  charCountFill: {
+    height: '100%',
+    backgroundColor: colors.clay[400],
+    borderRadius: radius.full,
   },
   charCount: {
-    fontSize: typography.fontSize.sm,
+    fontSize: typography.fontSize.xs,
     color: colors.warm[500],
-    marginTop: spacing.s2,
-  },
-  radioGroup: {
-    flexDirection: 'row',
-    gap: spacing.s4,
-    flexWrap: 'wrap',
-  },
-  radioOption: {
-    flex: 1,
-    minWidth: 100,
-    paddingVertical: spacing.s4,
-    borderWidth: 2,
-    borderColor: colors.warm[300],
-    borderRadius: radius.md,
-    alignItems: 'center',
-    backgroundColor: colors.warm.white,
-  },
-  radioOptionSelected: {
-    borderColor: colors.clay[500],
-    backgroundColor: colors.clay[50],
-  },
-  radioText: {
-    fontSize: typography.fontSize.base,
-    fontWeight: typography.fontWeight.medium,
-    color: colors.warm[700],
-  },
-  radioTextSelected: {
-    color: colors.clay[700],
-  },
-  buttonGroup: {
-    flexDirection: 'row',
-    marginTop: spacing.s6,
-    marginBottom: spacing.s8,
+    minWidth: 50,
+    textAlign: 'right',
   },
 });

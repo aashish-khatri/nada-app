@@ -1,11 +1,10 @@
 import React, { useState, useRef } from 'react';
-import { View, Text, StyleSheet,  TextInput, Alert } from 'react-native';
+import { View, Text, StyleSheet, TextInput, Alert, TouchableOpacity } from 'react-native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RouteProp } from '@react-navigation/native';
-import { Button } from '../../components';
+import { ScreenWrapper, Header, Button, Row } from '../../components';
 import { colors, spacing, typography, radius } from '../../theme';
 import { RootStackParamList } from '../../types';
-import { SafeAreaView } from 'react-native-safe-area-context';
 
 type OTPVerifyScreenProps = {
   navigation: NativeStackNavigationProp<RootStackParamList, 'OTPVerify'>;
@@ -29,6 +28,13 @@ export const OTPVerifyScreen: React.FC<OTPVerifyScreenProps> = ({ navigation, ro
     }
   };
 
+  const handleKeyPress = (key: string, index: number) => {
+    // Handle backspace - move to previous input
+    if (key === 'Backspace' && !otp[index] && index > 0) {
+      inputRefs.current[index - 1]?.focus();
+    }
+  };
+
   const handleVerify = async () => {
     const otpCode = otp.join('');
 
@@ -38,7 +44,6 @@ export const OTPVerifyScreen: React.FC<OTPVerifyScreenProps> = ({ navigation, ro
     }
 
     setLoading(true);
-
     // Simulate API call
     setTimeout(() => {
       setLoading(false);
@@ -47,48 +52,62 @@ export const OTPVerifyScreen: React.FC<OTPVerifyScreenProps> = ({ navigation, ro
   };
 
   return (
-    <SafeAreaView style={styles.container} edges={['top', 'bottom']}>
+    <ScreenWrapper>
+      <Header 
+        title="Verify OTP" 
+        onBack={() => navigation.goBack()}
+      />
+
       <View style={styles.content}>
+        {/* Icon & Text */}
         <View style={styles.header}>
           <Text style={styles.emoji}>🔐</Text>
           <Text style={styles.title}>Enter Verification Code</Text>
-          <Text style={styles.subtitle}>Sent to +91 {phone}</Text>
+          <Text style={styles.subtitle}>
+            Sent to <Text style={styles.phoneHighlight}>+91 {phone}</Text>
+          </Text>
         </View>
 
-        <View style={styles.otpContainer}>
+        {/* OTP Input Grid */}
+        <Row gap={spacing.s2} justify="center" style={styles.otpContainer}>
           {otp.map((digit, index) => (
             <TextInput
               key={index}
-              ref={(ref) => (inputRefs.current[index] = ref)}
-              style={styles.otpInput}
+              ref={(ref) => { inputRefs.current[index] = ref; }}
+              style={[
+                styles.otpInput,
+                digit && styles.otpInputFilled,
+              ]}
               keyboardType="number-pad"
               maxLength={1}
               value={digit}
               onChangeText={(value) => handleOTPChange(value, index)}
+              onKeyPress={({ nativeEvent }) => handleKeyPress(nativeEvent.key, index)}
+              selectTextOnFocus
             />
           ))}
+        </Row>
+
+        {/* Resend Link */}
+        <View style={styles.resendContainer}>
+          <Text style={styles.resendText}>Didn't receive code? </Text>
+          <TouchableOpacity>
+            <Text style={styles.resendLink}>Resend in 30s</Text>
+          </TouchableOpacity>
         </View>
 
-        <Text style={styles.resendText}>
-          Didn't receive code?{' '}
-          <Text style={styles.resendLink}>Resend in 30s</Text>
-        </Text>
-
+        {/* Verify Button */}
         <Button
           title="Verify"
           onPress={handleVerify}
           loading={loading}
         />
       </View>
-    </SafeAreaView>
+    </ScreenWrapper>
   );
 };
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: colors.warm[50],
-  },
   content: {
     flex: 1,
     paddingHorizontal: spacing.s6,
@@ -100,42 +119,55 @@ const styles = StyleSheet.create({
   },
   emoji: {
     fontSize: 64,
-    marginBottom: spacing.s4,
+    marginBottom: spacing.s5,
   },
   title: {
     fontSize: typography.fontSize['2xl'],
-    fontWeight: typography.fontWeight.semibold,
+    fontWeight: typography.fontWeight.bold,
     color: colors.warm[800],
-    marginBottom: spacing.s4,
+    marginBottom: spacing.s3,
+    textAlign: 'center',
   },
   subtitle: {
     fontSize: typography.fontSize.base,
     color: colors.warm[500],
+    textAlign: 'center',
+  },
+  phoneHighlight: {
+    fontWeight: typography.fontWeight.semibold,
+    color: colors.warm[700],
   },
   otpContainer: {
-    flexDirection: 'row',
-    justifyContent: 'center',
-    gap: spacing.s3,
     marginBottom: spacing.s6,
   },
   otpInput: {
-    width: 50,
+    width: 48,
     height: 56,
     borderWidth: 2,
     borderColor: colors.warm[300],
     borderRadius: radius.md,
     textAlign: 'center',
     fontSize: typography.fontSize['2xl'],
-    fontWeight: typography.fontWeight.semibold,
+    fontWeight: typography.fontWeight.bold,
+    color: colors.warm[800],
     backgroundColor: colors.warm.white,
   },
-  resendText: {
-    textAlign: 'center',
-    fontSize: typography.fontSize.sm,
-    color: colors.warm[500],
+  otpInputFilled: {
+    borderColor: colors.clay[400],
+    backgroundColor: colors.clay[50],
+  },
+  resendContainer: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
     marginBottom: spacing.s6,
   },
+  resendText: {
+    fontSize: typography.fontSize.sm,
+    color: colors.warm[500],
+  },
   resendLink: {
+    fontSize: typography.fontSize.sm,
     color: colors.clay[600],
     fontWeight: typography.fontWeight.semibold,
   },

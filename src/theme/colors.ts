@@ -33,6 +33,7 @@ export const colors = {
     200: '#D4DEC8',
     400: '#8FA671',
     500: '#6B8A4F',
+    600: '#5A7741',
   },
 
   // Indigo - Info states

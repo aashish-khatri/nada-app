@@ -39,3 +39,7 @@ yarn-error.*
 # generated native folders
 /ios
 /android
+
+# Prod Requirement files
+prd-broker-mode.md
+prd-core-matching-and-onboarding.md

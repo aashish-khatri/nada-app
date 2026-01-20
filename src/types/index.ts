@@ -5,7 +5,7 @@ export type RootStackParamList = {
   // Auth Flow
   Welcome: undefined;
   PhoneVerify: undefined;
-  OTPVerify: { phoneNumber: string };
+  OTPVerify: { phone: string };
   RoleSelect: undefined;
 
   // Onboarding Flow
@@ -47,4 +47,12 @@ export type ChatMessage = {
   senderId: string;
   text: string;
   timestamp: Date;
+};
+
+export type InterestRequest = {
+  id: string;
+  fromUserId: string;
+  toUserId: string;
+  status: 'pending' | 'approved' | 'rejected';
+  createdAt: Date;
 };
